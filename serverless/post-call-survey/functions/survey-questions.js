@@ -96,7 +96,7 @@ const completeTask = async (context, taskSid, attributes) => {
     let conversations = {};
     conversations.abandoned = "No";
 
-    attributes = {...attributes, conversations: {...JSON.parse(attributes.conversations), abandoned = "No"}}
+    attributes = {...attributes, conversations: {...JSON.parse(attributes.conversations), abandoned : "No"}}
 
     return await client.taskrouter.workspaces(context.TR_WORKSPACE_SID)
     .tasks(taskSid)
