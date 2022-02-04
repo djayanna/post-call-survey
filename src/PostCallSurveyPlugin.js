@@ -21,15 +21,14 @@ export default class PostCallSurveyPlugin extends FlexPlugin {
 
     flex.Actions.addListener("beforeHangupCall", async (payload) => {
       console.log("before call hang up");
-      console.log(payload);
 
       // TODO: check for survey attribute = true 
       await this.updateCall(
         manager,
         payload.task.attributes.call_sid,
-        payload.sid
-      ),
-        payload.task.queueName;
+        payload.sid,
+        payload.task.queueName
+      );
     });
   }
 

@@ -7,8 +7,6 @@ exports.handler = async function (context, event, callback) {
 
   let { queueName, callSid, taskSid, Digits, questionIndex, newTaskSid , attributes} = event;
 
-  console.log(`attr ${attributes}`);
-
   // helper to append a new "Say" verb with alice voice
   function say(text) {
     twiml.say({ voice: "alice" }, text);
@@ -46,17 +44,17 @@ exports.handler = async function (context, event, callback) {
       numDigits: 1,
       method: "POST",
       action: encodeURI(
-        `https://${context.DOMAIN_NAME}/survey-questions?callSid=${callSid}&taskSid=${taskSid}&newTaskSid=${newTaskSid}&questionIndex=${nextQuestion}&attributes=${JSON.stringify(attributes)}`
+        `https://${context.DOMAIN_NAME}/survey-questions?callSid=${callSid}&taskSid=${taskSid}&newTaskSid=${newTaskSid}&questionIndex=${nextQuestion}&attributes=${attributes}`
       ),
     });
   }
-
-  console.warn(twiml.toString());
 
   callback(null, twiml);
 };
 
 const createTask = async (context, taskSid, queueName) => {
+
+  console.log('qn - ' + queueName);
   const client = context.getTwilioClient();
   let conversations = {};
   conversations.conversation_id = taskSid;
@@ -83,20 +81,9 @@ const createTask = async (context, taskSid, queueName) => {
 
 const completeTask = async (context, taskSid, attributes) => {
     const client = context.getTwilioClient();
-    //console.log(taskSid);
-    // var task =  await client.taskrouter.workspaces(context.TR_WORKSPACE_SID)
-    // .tasks(taskSid)
-    // .fetch();
 
-    //let attributes = {...JSON.parse(task.attributes)};
-    //attributes = {...JSON.parse(attributes)};
-
-    //attributes = JSON.parse(JSON.parse(attributes));
-
-    let conversations = {};
-    conversations.abandoned = "No";
-
-    attributes = {...attributes, conversations: {...JSON.parse(attributes.conversations), abandoned : "No"}}
+    attributes = JSON.parse(attributes);
+    attributes.conversations.abandoned = "No";
 
     return await client.taskrouter.workspaces(context.TR_WORKSPACE_SID)
     .tasks(taskSid)
@@ -108,13 +95,7 @@ const completeTask = async (context, taskSid, attributes) => {
 
 const updateTask = async (context, taskSid, questionIndex, digits, attributes) => {
     const client = context.getTwilioClient();
-    //console.log(taskSid);
-    // var task =  await client.taskrouter.workspaces(context.TR_WORKSPACE_SID)
-    // .tasks(taskSid)
-    // .fetch();
-
-    //let attributes = {...JSON.parse(task.attributes)};
-    attributes = JSON.parse(JSON.parse(attributes));
+    attributes = JSON.parse(attributes);
 
     const text = survey()[parseInt(questionIndex)-1].text;
 
